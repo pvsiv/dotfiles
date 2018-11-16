@@ -1,0 +1,74 @@
+[alias]
+    co = checkout
+    cm = commit
+    s = status
+    br = branch
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short  
+    
+    stash-all = stash save --include-untracked        
+
+    branch-name = "!git rev-parse --abbrev-ref HEAD"
+    
+    # Push the current branch to the remote "origin", and set it to track
+    # the upstream branch
+    publish = "!git push -u origin $(git branch-name)"
+    # Delete the remote version of the current branch
+    unpublish = "!git push origin :$(git branch-name)"
+
+    # Delete a branch and recreate it from master
+    recreate = "!f() { [[ -n $@ ]] && git checkout \"$@\" && git unpublish && git checkout master && git branch -D \"$@\" && git checkout -b \"$@\" && git publish; }; f"
+
+    # Fire up difftool with all the changes from current branch
+    code-review = difftool origin/master...
+
+    # Interactively rebase all the commits on the current branch
+    rebase-branch = "!git rebase -i `git merge-base master HEAD`"
+
+
+    # Unstage any files that have been added to the staging area
+    unstage = reset HEAD
+    # Show changes that have been staged
+    diffc = diff --cached
+    
+    # Checkout our version of a file and add it
+    ours = "!f() { git checkout --ours $@ && git add $@; }; f"
+    # Checkout their version of a file and add it
+    theirs = "!f() { git checkout --theirs $@ && git add $@; }; f"
+
+    delete-merged-branches = "!git co master && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+    
+    prune-deleted=  !git fetch --prune &&  git br -vv | grep ': gone] ' | awk '{print $1}' | xargs -I % git br -d %
+    
+    undo = reset --soft HEAD^
+    
+[pull]
+    #automatically rebase on pull, but don't discard merge commits
+    rebase = preserve    
+[push]
+    #push the current branch to update a branch with the same name on the receiving end.
+    default = current    
+    followTags = true        
+[merge]
+    #throw error on merges that would create a merge commit
+    ff = only
+    
+[status]
+    showUntrackedFiles = all
+[diff]
+    # Use better, descriptive initials (c, i, w) instead of a/b.
+    mnemonicPrefix = true
+    # Show renames/moves as such
+    renames = true
+    # When using --word-diff, assume --word-diff-regex=.
+    wordRegex = .
+    tool = meld
+[merge]
+    tool = meld
+[fetch]
+    prune = true
+[color]
+    ui = true
+[core]
+    editor = vim
+    
+    
